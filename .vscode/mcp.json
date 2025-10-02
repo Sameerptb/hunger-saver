@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "Sentry": {
+      "url": "https://mcp.sentry.dev/mcp/sams-4f/react-native",
+      "type": "http"
+    }
+  }
+}
