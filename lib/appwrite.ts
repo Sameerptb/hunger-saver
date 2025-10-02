@@ -1,3 +1,4 @@
+import { CreateUserPrams, SignInParams } from '@/type';
 import {
   Account,
   Avatars,
@@ -7,7 +8,6 @@ import {
   Query,
   Storage,
 } from 'react-native-appwrite';
-import { CreateUserPrams, GetMenuParams, SignInParams } from '@/type';
 
 export const appwriteConfig = {
   endpoint: process.env.EXPO_PUBLIC_APPWRITE_ENDPOINT!,
@@ -15,11 +15,11 @@ export const appwriteConfig = {
   platform: 'com.sam.hungersaver',
   databaseId: '68d43df3002ee6541815',
   userCollectionId: 'user',
-  // bucketId: '68643e170015edaa95d7',
-  // categoriesCollectionId: '68643a390017b239fa0f',
-  // menuCollectionId: '68643ad80027ddb96920',
-  // customizationsCollectionId: '68643c0300297e5abc95',
-  // menuCustomizationsCollectionId: '68643cd8003580ecdd8f',
+  categoriesCollectionId: 'categories',
+  menuCollectionId: 'menu',
+  customizationsCollectionId: 'customization',
+  menuCustomizationsCollectionId: 'menu_customization',
+  bucketId: '68deccd20000e618465e',
 };
 
 export const client = new Client();
@@ -30,7 +30,8 @@ client
   .setPlatform(appwriteConfig.platform);
 
 export const account = new Account(client);
-export const database = new Databases(client);
+export const databases = new Databases(client);
+export const storage = new Storage(client);
 
 const avatars = new Avatars(client);
 
@@ -47,7 +48,7 @@ export const createUser = async ({
 
     const avatarUrl = avatars.getInitialsURL(name);
 
-    return await database.createDocument(
+    return await databases.createDocument(
       appwriteConfig.databaseId,
       appwriteConfig.userCollectionId,
       ID.unique(),
@@ -76,7 +77,7 @@ export const getCurrentUser = async () => {
     const currentAccount = await account.get();
     if (!currentAccount) throw Error;
 
-    const currentUser = await database.listDocuments(
+    const currentUser = await databases.listDocuments(
       appwriteConfig.databaseId,
       appwriteConfig.userCollectionId,
       [Query.equal('accountId', currentAccount.$id)],
