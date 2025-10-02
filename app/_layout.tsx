@@ -5,10 +5,11 @@ import {
   useFonts,
 } from '@expo-google-fonts/poppins';
 // import { useFonts } from 'expo-font';
+import useAuthStore from '@/store/auth.store';
+import * as Sentry from '@sentry/react-native';
 import { SplashScreen, Stack } from 'expo-router';
 import { useEffect } from 'react';
 import '../global.css';
-import * as Sentry from '@sentry/react-native';
 
 Sentry.init({
   dsn: 'https://36c18783ad45db3bd49bef0cea91fdc4@o4510116152999936.ingest.de.sentry.io/4510116154900560',
@@ -18,18 +19,22 @@ Sentry.init({
   sendDefaultPii: true,
 
   // Enable Logs
-  enableLogs: true,
+  // enableLogs: true,
 
   // Configure Session Replay
   replaysSessionSampleRate: 0.1,
   replaysOnErrorSampleRate: 1,
-  integrations: [Sentry.mobileReplayIntegration(), Sentry.feedbackIntegration()],
+  integrations: [
+    Sentry.mobileReplayIntegration(),
+    Sentry.feedbackIntegration(),
+  ],
 
   // uncomment the line below to enable Spotlight (https://spotlightjs.com)
   // spotlight: __DEV__,
 });
 
 export default Sentry.wrap(function RootLayout() {
+  const { isLoading, fetchAuthenticatedUser } = useAuthStore();
   const [fontsLoaded, error] = useFonts({
     'Poppins-Bold': Poppins_700Bold,
     'Poppins-SemiBold': Poppins_600SemiBold,
@@ -42,11 +47,11 @@ export default Sentry.wrap(function RootLayout() {
     if (fontsLoaded) SplashScreen.hideAsync();
   }, [fontsLoaded, error]);
 
-  // useEffect(() => {
-  //   fetchAuthenticatedUser()
-  // }, []);
+  useEffect(() => {
+    fetchAuthenticatedUser();
+  }, []);
 
-  // if (!fontsLoaded || isLoading) return null;
+  if (!fontsLoaded || isLoading) return null;
 
   return <Stack screenOptions={{ headerShown: false }} />;
 });
